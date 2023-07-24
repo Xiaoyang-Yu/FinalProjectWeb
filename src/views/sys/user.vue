@@ -62,12 +62,10 @@
         <el-form-item label="Phone" :label-width="formLabelWidth">
           <el-input v-model="userForm.phone" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="Status" :label-width="formLabelWidth">
-          <el-switch
-            v-model="userForm.status"
-            :active-value="1"
-            :inactive-value="0">
-          </el-switch>
+        <el-form-item label="用户角色" :label-width="formLabelWidth">
+          <el-checkbox-group v-model="userForm.roleIdList" :max="2">
+            <el-checkbox v-for="role in roleList" :label="role.roleId" :key="role.roleId">{{role.roleDesc}}</el-checkbox>
+          </el-checkbox-group>
         </el-form-item>
         <el-form-item label="Email" prop="email" :label-width="formLabelWidth">
           <el-input v-model="userForm.email" autocomplete="off"></el-input>
@@ -83,6 +81,7 @@
 
 <script>
 import userApi from '@/api/userManage'
+import roleApi from '@/api/roleManage'
 export default {
   data() {
     var checkEmail = (rule, value, callback) => {
@@ -94,8 +93,11 @@ export default {
       callback()
     }
     return {
+      roleList: [],
       formLabelWidth: '130px',
-      userForm: {},
+      userForm: {
+        roleIdList: []
+      },
       // 默认不可见
       dialogFormVisible: false,
       title: 'a',
@@ -122,6 +124,11 @@ export default {
     }
   },
   methods: {
+    getAllRoleList() {
+      roleApi.getAllRoleList().then(response => {
+        this.roleList = response.data
+      })
+    },
     deleteUser(user) {
       this.$confirm('Are you sure to delete this data?', 'Reminder', {
         confirmButtonText: '确定',
@@ -167,7 +174,9 @@ export default {
     },
     // 关闭表单的时候清除表单数据和验证信息
     clearForm() {
-      this.userForm = {}
+      this.userForm = {
+        roleIdList: []
+      }
       this.$refs.userFormRef.clearValidate()
     },
     openEditForm(id) {
@@ -199,6 +208,7 @@ export default {
   },
   created() {
     this.getUserList()
+    this.getAllRoleList()
   }
 }
 </script>
