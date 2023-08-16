@@ -47,6 +47,7 @@
   </div>
 </template>
 
+
 <script>
 import { validUsername } from '@/utils/validate'
 
@@ -173,10 +174,11 @@ $dark_gray:#889aa4;
 $light_gray:#eee;
 
 .login-container {
-  min-height: 100%;
   width: 100%;
-  background-color: $bg;
-  overflow: hidden;
+  height: 100%;
+  background-image: url("../../../1.jpg");
+  background-size:cover;
+}
 
   .login-form {
     position: relative;
@@ -228,5 +230,5 @@ $light_gray:#eee;
     cursor: pointer;
     user-select: none;
   }
-}
+
 </style>
