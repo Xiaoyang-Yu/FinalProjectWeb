@@ -41,19 +41,51 @@
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+      <el-button :loading="loading" type="primary" style="width:60%;margin-bottom:30px;" @click.native.prevent="handleLogin">Sign In</el-button>
+      <el-button :loading="loading" type="primary" style="width:37%;margin-bottom:30px;" @click="openRegisterForm" >Sign Up</el-button>
 
     </el-form>
+
+    <!-- 注册表单 -->
+    <el-dialog @close="clearForm" :title="title" :visible.sync="dialogFormVisible">
+      <el-form :model="userForm" ref="userFormRef" :rules="rules">
+        <el-form-item label="User Name" prop="username" :label-width="formLabelWidth">
+          <el-input v-model="userForm.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item v-if="userForm.id == null || userForm.id == undefined" label="Password" prop="password" :label-width="formLabelWidth">
+          <el-input  type="Password" v-model="userForm.password" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="Phone" :label-width="formLabelWidth">
+          <el-input v-model="userForm.phone" autocomplete="off"></el-input>
+        </el-form-item>
+
+        <el-form-item label="Email" prop="email" :label-width="formLabelWidth">
+          <el-input v-model="userForm.email" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveUser">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
-
 <script>
 import { validUsername } from '@/utils/validate'
+import userApi from '@/api/userManage'
 
 export default {
   name: 'Login',
   data() {
+    var checkEmail = (rule, value, callback) => {
+      // 正则表达式验证邮箱格式
+      var reg = /^[A-Za-z0-9]+([_\.][A-Za-z0-9]+)*@([A-Za-z0-9\-]+\.)+[A-Za-z]{2,6}$/
+      if (!reg.test(value)) {
+        return callback(new Error('Email格式不正确'))
+      }
+      callback()
+    }
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
         callback(new Error('Please enter the correct user name'))
@@ -69,6 +101,11 @@ export default {
       }
     }
     return {
+      formLabelWidth: '130px',
+      // 默认不可见
+      dialogFormVisible: false,
+      title: 'a',
+      userForm: {},
       loginForm: {
         username: 'admin',
         password: '123456'
@@ -79,7 +116,21 @@ export default {
       },
       loading: false,
       passwordType: 'password',
-      redirect: undefined
+      redirect: undefined,
+      rules: {
+        username: [
+          { required: true, message: 'Please type name.', trigger: 'blur' },
+          { min: 3, max: 12, message: '长度在 3 到 12 个字符', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: 'Please type password.', trigger: 'blur' },
+          { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'blur' }
+        ],
+        email: [
+          { required: true, message: 'Please type email.', trigger: 'blur' },
+          { validator: checkEmail, trigger: 'blur' }
+        ]
+      }
     }
   },
   watch: {
@@ -110,6 +161,39 @@ export default {
             this.loading = false
           }).catch(() => {
             this.loading = false
+          })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    openRegisterForm(id) {
+      this.title = 'New User'
+      this.dialogFormVisible = true
+    },
+    // 关闭表单的时候清除表单数据和验证信息
+    clearForm() {
+      this.userForm = {
+        roleIdList: []
+      }
+      this.$refs.userFormRef.clearValidate()
+    },
+    saveUser() {
+      // 先触发表单验证
+      this.$refs.userFormRef.validate((valid) => {
+        if (valid) {
+          // 提交请求给后台
+          userApi.saveUser(this.userForm).then(response => {
+            // 成功提示
+            this.$message({
+              message: response.message,
+              type: 'success'
+            })
+            // 关闭对话框
+            this.dialogFormVisible = false
+            // 刷新表格
+            this.getUserList()
           })
         } else {
           console.log('error submit!!')
@@ -148,7 +232,7 @@ $cursor: #fff;
       -webkit-appearance: none;
       border-radius: 0px;
       padding: 12px 5px 12px 15px;
-      color: $light_gray;
+      color: #000000;
       height: 47px;
       caret-color: $cursor;
 
