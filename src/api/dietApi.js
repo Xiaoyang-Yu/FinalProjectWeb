@@ -45,7 +45,7 @@ export default {
       method: 'delete'
     })
   },
-  getAPI(searchModel){
+  getAPI(searchModel) {
     return request({
       url: '/sys/diet/gptAPI',
       method: 'get',
@@ -54,5 +54,5 @@ export default {
       },
       timeout: 50000
     })
-  },
+  }
 }
