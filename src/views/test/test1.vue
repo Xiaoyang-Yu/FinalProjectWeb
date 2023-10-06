@@ -63,12 +63,13 @@
 
 <script>
 import dietApi from '@/api/dietApi'
+import store from "@/store";
 
 export default {
   data() {
     return {
       result: '',
-      uid: 1,
+      uid: store.getters.uid,
       promptStr: '',
       formLabelWidth: '130px',
       dietForm: {},
@@ -167,11 +168,12 @@ export default {
       dietApi.getDietByUid(uid).then(response => {
         //console.log(response.data.dietList.toString())
         // eslint-disable-next-line no-eval
-        //this.dietList = eval(response.data.dietList.toString())
+        this.dietList = eval(response.data.dietList.toString())
       })
     }
   },
   created() {
+    console.log(store.getters.uid)
     if (this.uid > 0) {
       this.getDietList(this.uid)
     }
