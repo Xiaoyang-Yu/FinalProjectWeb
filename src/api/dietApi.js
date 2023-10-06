@@ -55,7 +55,7 @@ export default {
   getAPI(searchModel) {
     const { Configuration, OpenAIApi } = require("openai");
     const configuration = new Configuration({
-      apiKey: "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",
+      apiKey: process.env.VUE_APP_OPENAI_API_KEY,
     });
     const openai = new OpenAIApi(configuration);
     const chat_completion =  openai.createChatCompletion({
@@ -63,6 +63,7 @@ export default {
       messages: [{ role: "user", content: searchModel.prompt}]
       // "A man who weighs 85kg and is 170cm tall, and a 30-year-old office work the man with high blood pressure, diabetes, vegetarian, or Gluten allergies, give me a diet sheet that should include detailed information including 3 meals, names of food, food units, protein grams, carbohydrates grams, fat grams, dietary fiber grams, sodium grams, and calories. output Format [{meal:breakfast,details:[{name:'egg',fat:'6g'}]...}]." }],
     });
+    console.log(process.env)
     return chat_completion
   }
 }
