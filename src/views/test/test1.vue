@@ -5,17 +5,41 @@
       <el-row>
         <el-col :span="23">
           <el-input v-model="searchModel.prompt" placeholder="prompt"></el-input>
-          <el-button icon="el-icon-search" round type="success" @click="getDietList">Get Advice</el-button>
+          <el-button icon="el-icon-search" round type="success" @click="getGPT">Get Advice</el-button>
+          <el-button icon="el-icon-search" round type="success" @click="saveAdvice">Save Advice</el-button>
+
         </el-col>
         <el-col :span="1">
           <el-button @click="openEditForm(null)" type="primary" icon="el-icon-plus"></el-button>
         </el-col>
       </el-row>
     </el-card>
-
+    <el-card>
+      <h1>DataList</h1>
+      <el-table :data="dietList" style="width: 100%">
+        <el-table-column type="expand">
+          <template #default="props">
+            <div>
+              <h3>Family</h3>
+              <el-table :data="props.row.details">
+                <el-table-column label="Name" prop="name"></el-table-column>
+                <el-table-column label="Units" prop="units"></el-table-column>
+                <el-table-column label="Protein" prop="protein"></el-table-column>
+                <el-table-column label="Carbohydrates" prop="carbohydrates"></el-table-column>
+                <el-table-column label="Fat" prop="fat"></el-table-column>
+                <el-table-column label="Dietary Fiber" prop="dietary_fiber"></el-table-column>
+                <el-table-column label="Sodium" prop="sodium"></el-table-column>
+                <el-table-column label="Calories" prop="calories"></el-table-column>
+              </el-table>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="Meal" prop="meal" />
+      </el-table>
+    </el-card>
     <el-card>
       <h1>Result</h1>
-      {{this.dietList}}
+      {{this.result}}
     </el-card>
     <el-card>
       <h1>Prompt</h1>
@@ -39,9 +63,12 @@
 
 <script>
 import dietApi from '@/api/dietApi'
+
 export default {
   data() {
     return {
+      result: '',
+      uid: 1,
       promptStr: '',
       formLabelWidth: '130px',
       dietForm: {},
@@ -50,7 +77,7 @@ export default {
       title: 'a',
       total: 0,
       searchModel: {
-        prompt: ""
+        prompt: ''
       },
       dietList: [],
       rules: {
@@ -74,7 +101,6 @@ export default {
             message: response.message
           })
           // 删除完成刷新数据
-          this.getDietList()
         })
       }).catch(() => {
         this.$message({
@@ -83,7 +109,7 @@ export default {
         })
       })
     },
-    saveRole() {
+    saveAdvice() {
       // 先触发表单验证
       this.$refs.dietFormRef.validate((valid) => {
         if (valid) {
@@ -97,7 +123,6 @@ export default {
             // 关闭对话框
             this.dialogFormVisible = false
             // 刷新表格
-            //this.getRoleList()
           })
         } else {
           console.log('error submit!!')
@@ -130,16 +155,26 @@ export default {
       this.searchModel.pageNo = pageNo
       // this.getDietList()
     },
-    getDietList() {
+    getGPT() {
       dietApi.getAPI(this.searchModel).then(response => {
-        this.dietList = response.data
-        this.promptStr = response.message
-        console.log(response.data)
+        this.result = response.data.choices[0].message.content
+        this.dietList = eval(response.data.choices[0].message.content.toString())
+        this.promptStr = this.searchModel.prompt
+        this.result
+      })
+    },
+    getDietList(uid) {
+      dietApi.getDietByUid(uid).then(response => {
+        //console.log(response.data.dietList.toString())
+        // eslint-disable-next-line no-eval
+        //this.dietList = eval(response.data.dietList.toString())
       })
     }
   },
   created() {
-    // this.getDietList()
+    if (this.uid > 0) {
+      this.getDietList(this.uid)
+    }
   }
 }
 </script>

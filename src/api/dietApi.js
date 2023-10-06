@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import { Configuration, OpenAIApi} from 'openai'
 
 export default {
   getDietListDefault(searchModel) {
@@ -39,6 +40,12 @@ export default {
       method: 'get'
     })
   },
+  getDietByUid(uid) {
+    return request({
+      url: `/sys/bodyFatPercentage/dietList?uid=${uid}`,
+      method: 'get'
+    })
+  },
   deleteDietById(id) {
     return request({
       url: `/sys/die/${id}`,
@@ -46,13 +53,16 @@ export default {
     })
   },
   getAPI(searchModel) {
-    return request({
-      url: '/sys/diet/gptAPI',
-      method: 'get',
-      params: {
-        prompt: searchModel.prompt
-      },
-      timeout: 50000
-    })
+    const { Configuration, OpenAIApi } = require("openai");
+    const configuration = new Configuration({
+      apiKey: "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",
+    });
+    const openai = new OpenAIApi(configuration);
+    const chat_completion =  openai.createChatCompletion({
+      model: "gpt-4",
+      messages: [{ role: "user", content: searchModel.prompt}]
+      // "A man who weighs 85kg and is 170cm tall, and a 30-year-old office work the man with high blood pressure, diabetes, vegetarian, or Gluten allergies, give me a diet sheet that should include detailed information including 3 meals, names of food, food units, protein grams, carbohydrates grams, fat grams, dietary fiber grams, sodium grams, and calories. output Format [{meal:breakfast,details:[{name:'egg',fat:'6g'}]...}]." }],
+    });
+    return chat_completion
   }
 }
