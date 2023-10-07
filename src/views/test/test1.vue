@@ -159,14 +159,19 @@ export default {
     getGPT() {
       dietApi.getAPI(this.searchModel).then(response => {
         this.result = response.data.choices[0].message.content
-        this.dietList = eval(response.data.choices[0].message.content.toString())
-        this.promptStr = this.searchModel.prompt
-        this.result
+        const startIndex = this.result.indexOf('```')
+        const endIndex = this.result.lastIndexOf('```')
+        if (startIndex > 0 || endIndex > 0) {
+          this.promptStr = response.data.choices[0].message.content.toString().substring(startIndex + 3, endIndex)
+        } else {
+          this.promptStr = this.result
+        }
+        // eslint-disable-next-line no-eval
+        this.dietList = eval(this.promptStr)
       })
     },
     getDietList(uid) {
       dietApi.getDietByUid(uid).then(response => {
-        //console.log(response.data.dietList.toString())
         // eslint-disable-next-line no-eval
         this.dietList = eval(response.data.dietList.toString())
       })
