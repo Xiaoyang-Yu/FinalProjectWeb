@@ -24,20 +24,18 @@
             {{(searchModel.pageNo - 1) * searchModel.pageSize + scope.$index + 1}}
           </template>
         </el-table-column>
-        <el-table-column prop="data1" label="属性1" width="150">
-        </el-table-column>
-        <el-table-column prop="data2" label="属性2" width="150">
-        </el-table-column>
-        <el-table-column prop="data3" label="属性3" width="150">
-        </el-table-column>
-        <el-table-column prop="data4" label="属性4" width="150">
-        </el-table-column>
-        <el-table-column prop="data5" label="属性5" width="150">
-        </el-table-column>
-        <el-table-column prop="data6" label="属性6" width="150">
-        </el-table-column>
-        <el-table-column prop="data7" label="属性7" width="150">
-        </el-table-column>
+        <el-form-item label="sex" prop="sex">
+          <el-select style="width:150px; margin-left: 47px;" v-model="dataList.sex" placeholder="Select Sex">
+            <el-option v-for="item in sexOptions" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Vegetarian" prop="isVegetarian">
+          <el-select style="width:150px;" v-model="dataList.isVegetarian" placeholder="Select">
+            <el-option v-for="item in options2" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-table-column label="Edit" width="120" >
           <template slot-scope="scope">
             <el-button @click="openEditForm(scope.row.id)" type="primary" icon="el-icon-edit" size="mini" circle></el-button>
