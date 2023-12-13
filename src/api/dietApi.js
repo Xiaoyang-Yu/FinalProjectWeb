@@ -28,6 +28,7 @@ export default {
     })
   },
   addBodyFatPercentage(bodyFatPercentage) {
+    console.log(bodyFatPercentage)
     return request({
       url: '/sys/bodyFatPercentage',
       method: 'post',
@@ -36,8 +37,8 @@ export default {
   },
   // 在这个方法判断，决定点击表单确定按钮，是新增还是修改
   saveDiet(diet) {
-    console.log(diet)
-    if (diet.id == null && diet.id === undefined) {
+    console.log(diet.id === null)
+    if (diet.id === null || diet.id === undefined) {
       console.log('add')
       return this.addDiet(diet)
     }
@@ -53,6 +54,12 @@ export default {
   getDietByUid(uid) {
     return request({
       url: `/sys/bodyFatPercentage/dietList?uid=${uid}`,
+      method: 'get'
+    })
+  },
+  getRecommendByUid(uid) {
+    return request({
+      url: `/sys/bodyFatPercentage/recommendList?uid=${uid}`,
       method: 'get'
     })
   },
